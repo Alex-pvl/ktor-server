@@ -11,7 +11,7 @@ import ru.playzone.features.register.RegisterReceive
 import ru.playzone.features.register.RegisterResponse
 import ru.playzone.models.Token
 import ru.playzone.models.User
-import ru.playzone.models.User.getByLogin
+import ru.playzone.models.User.getOneByLogin
 import ru.playzone.utils.isValidEmail
 import java.util.*
 
@@ -24,15 +24,16 @@ class RegisterController(
 
         if (!receive.email.isValidEmail()) {
             call.respond(HttpStatusCode.BadRequest, "Invalid email")
+            return
         }
 
-        val user = getByLogin(receive.login)
+        val user = getOneByLogin(receive.login)
 
         user?.let {
             call.respond(HttpStatusCode.Conflict, "User already exists")
         }
 
-        val token = UUID.randomUUID()
+        val token = UUID.randomUUID().toString()
 
         try {
             User.create(
@@ -51,12 +52,12 @@ class RegisterController(
 
         Token.create(
             TokenDTO(
-                id = UUID.randomUUID(),
+                id = UUID.randomUUID().toString(),
                 login = receive.login,
                 token = token,
             )
         )
 
-        call.respond(RegisterResponse(token = token.toString()))
+        call.respond(RegisterResponse(token = token))
     }
 }

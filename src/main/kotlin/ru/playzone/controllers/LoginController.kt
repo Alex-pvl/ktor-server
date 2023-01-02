@@ -16,20 +16,20 @@ class LoginController(
 ) {
     suspend fun login() {
         val receive = call.receive<LoginReceive>()
-        val user = User.getByLogin(receive.login)
+        val user = User.getOneByLogin(receive.login)
 
         user?.let {
             if (it.password == receive.password) {
-                val token = UUID.randomUUID()
+                val token = UUID.randomUUID().toString()
 
                 Token.create(
                     TokenDTO(
-                        id = UUID.randomUUID(),
+                        id = UUID.randomUUID().toString(),
                         login = receive.login,
                         token = token,
                     )
                 )
-                call.respond(LoginResponse(token = token.toString()))
+                call.respond(LoginResponse(token = token))
             } else {
                 call.respond(HttpStatusCode.BadRequest, "Invalid password")
             }

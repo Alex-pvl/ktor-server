@@ -7,8 +7,7 @@ import ru.playzone.controllers.RegisterController
 fun Application.configureRegisterRouting() {
     routing {
         post("/register") {
-            val registerController = RegisterController(call)
-            registerController.register()
+            RegisterController(call).register()
             return@post
         }
     }

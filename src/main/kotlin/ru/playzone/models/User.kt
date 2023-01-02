@@ -3,9 +3,9 @@ package ru.playzone.models
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.playzone.dto.UserDTO
-import java.sql.SQLException
 
 object User: Table("users") {
     private val login = User.varchar("login", 25)
@@ -22,7 +22,25 @@ object User: Table("users") {
         }
     }
 
-    fun getByLogin(inputLogin: String): UserDTO? {
+    fun getAll(): List<UserDTO> {
+        return try {
+            transaction {
+                User.selectAll()
+                    .map {
+                        UserDTO(
+                            login = it[login],
+                            password = it[password],
+                            username = it[username],
+                            email = it[email],
+                        )
+                    }
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun getOneByLogin(inputLogin: String): UserDTO? {
         return try {
             transaction {
                 val user = User.select { login.eq(inputLogin) }.singleOrNull()

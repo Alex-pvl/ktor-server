@@ -1,9 +1,10 @@
 package ru.playzone.dto
 
-import java.util.UUID
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class TokenDTO(
-    val id: UUID,
+    val id: String,
     val login: String,
-    val token: UUID,
+    val token: String,
 )
